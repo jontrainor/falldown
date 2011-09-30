@@ -1,0 +1,95 @@
+<html>  
+  <head>  
+    <title>Fall Down Game</title>  
+  <style>  
+  body {  
+    margin:0px;  
+    padding:0px;  
+    text-align:center;  
+  }  
+  
+  canvas{  
+    outline:0;  
+    border:1px solid #000;  
+    margin-left: auto;  
+    margin-right: auto;  
+  }  
+  </style>  
+  </head>  
+  <body> 
+    <p> Fall Down Game </p>
+    <canvas id='c'></canvas>  
+    <script type="text/javascript">
+	
+	//incremental tests:
+	//1. create a background that is falling
+	//2. create circle and allow player to move it left and right as it falls
+	//3. create platforms with random gaps in them
+	//4. the ball will stop falling if it hits a platform
+	//5. the ball will bounce if it hits a platform in the direction in which the it was falling
+	//6. set the ball to fall at a speed at which will be realistic for the player to be competitive
+	
+	var width = 320,
+		height = 500,
+		gLoop,
+		c = document.getElementById('c'), //updates canvas
+		ctx = c.getContext('2d');
+	
+	c.width = width;
+	c.height = height;
+	
+	var clear = function()
+	{
+		ctx.fillStyle = 'rgb(135, 196, 250)'; //set color to light sky blue
+		ctx.fillRect(0, 0, width, height); //fill canvas with a rectangle
+	}
+	
+	var howManyClouds = 10, clouds = [];
+	
+	for (var i = 0; i<howManyClouds; i++)
+		clouds.push([Math.random() * (width-10), Math.random() * (height-10), Math.random() * 90 + 10, 
+			Math.random() / 2]);
+		//the array clouds has 4 elements: [x position, y position, radius from 10 to 100,
+		//transparancy from 0 to 0.5)
+
+	var DrawClouds = function()
+	{
+		for (var i=0; i<howManyClouds; i++)
+		{
+			ctx.fillStyle = 'rgba(255, 255, 255, ' + clouds[i][3] + ')'; //white transparant
+			ctx.beginPath();
+			ctx.arc(clouds[i][0], clouds[i][1], clouds[i][2], 0, Math.PI*2, true);
+			ctx.fill();
+			ctx.closePath();
+		}
+	};
+	
+	var MoveClouds = function(yDisplacement)
+	{
+		for (var i=0; i<howManyClouds; i++)
+		{
+			if (clouds[i][1] + clouds[i][2] < 0)
+			{
+				clouds[i][0] = Math.random() * (width-10);
+				clouds[i][2] = Math.random() * 90 + 10;
+				clouds[i][1] = height + clouds[i][2];
+				clouds[i][3] = Math.random() / 2;
+			}
+			else
+				clouds[i][1] -= yDisplacement;
+		}
+	}
+	
+	var GameLoop = function()
+	{
+		clear();
+		MoveClouds(5);
+		DrawClouds();
+		gLoop = setTimeout(GameLoop, 1000/50)
+	}
+	
+	GameLoop();
+	
+	</script>  
+  </body>  
+</html>  
