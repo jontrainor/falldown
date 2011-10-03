@@ -24,19 +24,22 @@
 	//incremental tests:
 	//1. create a background that is falling - complete
 	//2. create circle and allow player to move it left and right as it falls
-	//3. create platforms with random gaps in them
+	//3. create platforms with random gaps in them - complete
 	//4. the ball will stop falling if it hits a platform
 	//5. the ball will bounce if it hits a platform in the direction in which the it was falling
 	//6. set the ball to fall at a speed at which will be realistic for the player to be competitive
 	
+	//initial set up
 	var width = 320,
 		height = 500,
 		gLoop,
-		c = document.getElementById('c'), //updates canvas
+		c = document.getElementById('c'), 
 		ctx = c.getContext('2d');
 	
 	c.width = width;
 	c.height = height;
+	
+	var gameSpeed = 2;
 	
 	var clear = function()
 	{
@@ -44,6 +47,7 @@
 		ctx.fillRect(0, 0, width, height); //fill canvas with a rectangle
 	}
 	
+	//background
 	var howManyClouds = 10, clouds = [];
 	
 	for (var i = 0; i<howManyClouds; i++)
@@ -62,9 +66,9 @@
 			ctx.fill();
 			ctx.closePath();
 		}
-	};
+	}
 	
-	var MoveClouds = function(yDisplacement)
+	var MoveClouds = function()
 	{
 		for (var i=0; i<howManyClouds; i++)
 		{
@@ -76,16 +80,80 @@
 				clouds[i][3] = Math.random() / 2;
 			}
 			else
-				clouds[i][1] -= yDisplacement;
+				clouds[i][1] -= gameSpeed;
 		}
 	}
 	
+	//obstacles
+	var howManyObstacles = height/100, obstacles = [], gap = 80;
+	
+	for (var i=0; i<howManyObstacles; i++)
+		obstacles.push([height + 100*i, Math.random() * gap + 80]);
+	
+	var DrawObstacles = function()
+	{
+		for (var i=0; i<howManyObstacles; i++)
+		{
+			ctx.fillStyle = 'rgb(105, 105, 105)'; //gray
+			if (obstacles[i][1] == gap)
+				ctx.fillRect(gap, obstacles[i], width, 10);
+			else if (obstacles[i][1] >= width - gap)
+				ctx.fillRect(0, obstacles[i][0], width - gap, 10);
+			else
+			{
+				ctx.fillRect(0, obstacles[i][0], obstacles[i][1] - gap, 10);
+				ctx.fillRect(obstacles[i][1], obstacles[i][0], width, 10);
+			}
+		}
+	}
+	
+	var MoveObstacles = function()
+	{
+		for (var i=0; i<howManyObstacles; i++)
+			obstacles[i][0] -= gameSpeed;
+			
+		if (obstacles[0][0] + 10 <= 0)
+		{
+			obstacles.shift();
+			obstacles.push([height + 10, Math.random() * width + gap]);
+		}
+	}
+	
+	//player
+	var player = {x: width/2, y: height/3, r: 10, speed: 5};
+	var keysDown;
+
+	addEventListener("keydown", function (e) {
+		keysDown = e.keyCode;
+	}, false);
+
+	addEventListener("keyup", function (e) {
+		keysDown = 0;
+	}, false);
+	
+	var DrawPlayer = function()
+	{
+		//37 - left, 39 - right
+		if (keysDown == 37) {  player.x -= player.speed;} //move left
+		else if (keysDown == 39) { player.x += player.speed;} //move right
+		
+		ctx.fillStyle = 'rgb(0, 0, 0)';
+		ctx.beginPath();
+		ctx.arc(player.x, player.y, player.r, 0, Math.PI*2, true);
+		ctx.fill();
+		ctx.closepath();
+	}
+	
+	//main game loop
 	var GameLoop = function()
 	{
 		clear();
-		MoveClouds(5);
+		MoveClouds();
 		DrawClouds();
-		gLoop = setTimeout(GameLoop, 1000/50)
+		MoveObstacles();
+		DrawObstacles();
+		//DrawPlayer();
+		gLoop = setTimeout(GameLoop, 1000/50);
 	}
 	
 	GameLoop();
