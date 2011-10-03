@@ -134,8 +134,16 @@
 	var DrawPlayer = function()
 	{
 		//37 - left, 39 - right
-		if (keysDown == 37) {  player.x -= player.speed;} //move left
-		else if (keysDown == 39) { player.x += player.speed;} //move right
+		if (keysDown == 37) 
+		{  
+			if (player.x > player.r) // checks if the player can move left within the screen
+				player.x -= player.speed; //move left
+		} 
+		else if (keysDown == 39) 
+		{ 
+			if (player.x < width - player.r) // checks if the player can move right within the screen
+				player.x += player.speed; //move right
+		} 
 		ctx.fillStyle = 'rgb(0, 0, 0)';
 		ctx.beginPath();
 		ctx.arc(player.x, player.y, player.r, 0, Math.PI*2, true);
@@ -143,6 +151,14 @@
 		ctx.closePath();
 	}
 	
+	/*var isPlayerCrashed = function()
+	{
+		for (var i=0; i<howManyObstacles; i++)
+		{
+			
+		}
+	}
+	*/
 	//main game loop
 	var GameLoop = function()
 	{
@@ -152,6 +168,7 @@
 		MoveObstacles();
 		DrawObstacles();
 		DrawPlayer();
+		
 		gLoop = setTimeout(GameLoop, 1000/50);
 	}
 	
