@@ -25,7 +25,7 @@
 	//1. create a background that is falling - complete
 	//2. create circle and allow player to move it left and right as it falls - complete
 	//3. create platforms with random gaps in them - complete
-	//4. the ball will stop falling if it hits a platform
+	//4. the ball will stop falling if it hits a platform - complete
 	//5. the ball will bounce if it hits a platform in the direction in which the it was falling
 	//6. set the ball to fall at a speed at which will be realistic for the player to be competitive
 	
@@ -88,7 +88,7 @@
 	var howManyObstacles = height/100, obstacles = [], gap = 80;
 	
 	for (var i=0; i<howManyObstacles; i++)
-		obstacles.push([height + 100*i, Math.random() * gap + 80]);
+		obstacles.push([height + 100*i, Math.random() * width + gap]); //obstacles is [y position, x position for end of gap]
 	
 	var DrawObstacles = function()
 	{
@@ -151,25 +151,34 @@
 		ctx.closePath();
 	}
 	
-	/*var isPlayerCrashed = function()
+	var isPlayerCrashed = function()
 	{
-		for (var i=0; i<howManyObstacles; i++)
-		{
-			
-		}
+		for (var i=0; i<howManyObstacles; i++) //check each obstacle
+			if (obstacles[i][0] + 10 >= player.y - 10 && obstacles[i][0] <= player.y + 10) // check if player is within verticle range of the obstacle
+				if (obstacles[i][1] - gap > player.x - 10 || obstacles[i][1] < player.x + 10) //check if player is within horizontal range of the obstacle
+					return(true);
+		return(false);
 	}
-	*/
+	
 	//main game loop
 	var GameLoop = function()
 	{
-		clear();
-		MoveClouds();
-		DrawClouds();
-		MoveObstacles();
-		DrawObstacles();
-		DrawPlayer();
-		
-		gLoop = setTimeout(GameLoop, 1000/50);
+		if (isPlayerCrashed() != true)
+		{
+			clear();
+			MoveClouds();
+			DrawClouds();
+			MoveObstacles();
+			DrawObstacles();
+			DrawPlayer();
+		}
+		else
+		{
+			ctx.font = "20pt Arial";
+			ctx.textAlign = "center";
+			ctx.fillText("GAME OVER", width/2, height/2);
+		}
+			gLoop = setTimeout(GameLoop, 1000/50);
 	}
 	
 	GameLoop();

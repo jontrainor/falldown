@@ -88,7 +88,7 @@
 	var howManyObstacles = height/100, obstacles = [], gap = 80;
 	
 	for (var i=0; i<howManyObstacles; i++)
-		obstacles.push([height + 100*i, Math.random() * gap + 80]);
+		obstacles.push([height + 100*i, Math.random() * width + gap]); //obstacles is [y position, x position for end of gap]
 	
 	var DrawObstacles = function()
 	{
@@ -153,23 +153,32 @@
 	
 	var isPlayerCrashed = function()
 	{
-		for (var i=0; i<howManyObstacles; i++)
-		{
-			
-		}
+		for (var i=0; i<howManyObstacles; i++) //check each obstacle
+			if (obstacles[i][0] + 10 >= player.y - 10 && obstacles[i][0] <= player.y + 10) // check if player is within verticle range of the obstacle
+				if (obstacles[i][1] - gap > player.x - 10 || obstacles[i][1] < player.x + 10) //check if player is within horizontal range of the obstacle
+					return(true);
+		return(false);
 	}
 	
 	//main game loop
 	var GameLoop = function()
 	{
-		clear();
-		MoveClouds();
-		DrawClouds();
-		MoveObstacles();
-		DrawObstacles();
-		DrawPlayer();
-		
-		gLoop = setTimeout(GameLoop, 1000/50);
+		if (isPlayerCrashed() != true)
+		{
+			clear();
+			MoveClouds();
+			DrawClouds();
+			MoveObstacles();
+			DrawObstacles();
+			DrawPlayer();
+		}
+		else
+		{
+			ctx.font = "20pt Arial";
+			ctx.textAlign = "center";
+			ctx.fillText("GAME OVER", width/2, height/2);
+		}
+			gLoop = setTimeout(GameLoop, 1000/50);
 	}
 	
 	GameLoop();
